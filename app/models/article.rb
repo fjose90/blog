@@ -7,6 +7,20 @@
 class Article < ApplicationRecord
   include Visible
 
+  after_initialize :assign_account_id
+
+  def assign_account_id
+    ext_id = nil
+    ext_id = generate_id while ext_id.nil? || Article.where(ext_id:).first
+    self.ext_id = ext_id
+  end
+
+  def generate_id
+    id = ['A']
+    5.times { id << SecureRandom.random_number(9) }
+    id = id.join
+  end
+
   has_many :comments, dependent: :destroy
 
   validates :title, presence: true
